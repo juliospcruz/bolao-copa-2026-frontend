@@ -1,0 +1,20 @@
+<div class="container">
+  <h2>🏆 Seleções da Copa 2026</h2>
+
+  <div class="team-grid" *ngIf="teams.length > 0; else carregando">
+    <div *ngFor="let team of teams" class="team-card">
+      <img [src]="team.flagUrl" [alt]="team.name" width="50" style="border-radius: 4px; box-shadow: 1px 1px 5px rgba(0,0,0,0.2);">
+      <span>
+        <strong>{{ team.name }}</strong>
+        <small style="color: #666;">(Grupo {{ team.groupLetter }})</small>
+      </span>
+    </div>
+  </div>
+
+  <ng-template #carregando>
+    <div style="padding: 20px; border: 1px dashed #ccc; margin-top: 10px;">
+      <p>Buscando seleções no banco de dados...</p>
+      <p><small>Verifique se o backend na porta 8081 está rodando e se o CORS está ativo.</small></p>
+    </div>
+  </ng-template>
+</div>

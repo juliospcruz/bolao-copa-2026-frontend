@@ -1,0 +1,42 @@
+<div class="container">
+  <h2>📅 Próximos Confrontos</h2>
+
+  <div *ngIf="matches && matches.length > 0; else carregando" class="match-container">
+    <div *ngFor="let match of matches" class="match-card">
+
+      <div class="phase-badge">{{ match.phase }}</div>
+
+      <div class="scoreboard">
+        <div class="team">
+          <img [src]="match.homeTeam?.flagUrl" [alt]="match.homeTeam?.name" width="30">
+          <span>{{ match.homeTeam?.name }}</span>
+        </div>
+
+        <div class="score-display">
+          <strong>{{ match.homeScore ?? 0 }}</strong>
+          <span> X </span>
+          <strong>{{ match.awayScore ?? 0 }}</strong>
+        </div>
+
+        <div class="team">
+          <span>{{ match.awayTeam?.name }}</span>
+          <img [src]="match.awayTeam?.flagUrl" [alt]="match.awayTeam?.name" width="30">
+        </div>
+      </div>
+
+      <div class="details">
+        <small>
+          📍 {{ match.stadium || 'Estádio Indefinido' }} |
+          ⏰ {{ match.matchDate | date:'dd/MM HH:mm' }}
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #carregando>
+    <div class="loading-box">
+      <p>Carregando jogos ou nenhum jogo cadastrado...</p>
+      <small>Verifique se o backend na porta 8081 está ativo.</small>
+    </div>
+  </ng-template>
+</div>
