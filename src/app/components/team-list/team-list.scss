@@ -1,0 +1,150 @@
+.world-cup-dashboard {
+  padding: 20px;
+  background: #fff;
+}
+
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.main-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+
+  .search-input {
+    width: 100%;
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 2px solid #ddd;
+    outline: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    }
+  }
+}
+
+.groups-layout {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); // 6 grupos em cima e 6 embaixo
+  gap: 12px;
+  min-height: 200px;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.group-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+  .group-header {
+    background: #2c3e50;
+    color: #ffd700;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+.teams-container {
+  padding: 8px;
+
+  .team-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f0f7ff;
+    }
+
+    // Estilo para o time selecionado
+    &.active {
+      background-color: #007bff;
+      color: white;
+      transform: scale(1.05);
+
+      .name { color: white; }
+    }
+
+    .flag {
+      width: 24px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #444;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.no-results {
+  grid-column: span 6;
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-weight: bold;
+}
+
+.loading-box {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+.groups-layout {
+  display: grid;
+  // Força 6 colunas e evita que cards grandes (como o do Mata-mata) quebrem o layout
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  align-items: start; // Alinha os cards pelo topo
+}
+
+.group-card {
+  min-height: 180px; // Mantém um padrão visual
+  display: flex;
+  flex-direction: column;
+
+  .teams-container {
+    flex-grow: 1;
+    // Se um grupo tiver muitos times (como o M), ele ganha um scroll interno
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 8px;
+  }
+}

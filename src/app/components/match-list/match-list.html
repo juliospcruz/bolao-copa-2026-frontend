@@ -1,42 +1,42 @@
 <div class="container">
-  <h2>📅 Próximos Confrontos</h2>
+  <h2 class="section-title">📅 Próximos Confrontos</h2>
 
-  <div *ngIf="matches && matches.length > 0; else carregando" class="match-container">
+  <div *ngIf="!loading && matches.length > 0; else carregando" class="match-grid">
     <div *ngFor="let match of matches" class="match-card">
 
-      <div class="phase-badge">{{ match.phase }}</div>
+      <div class="match-header">
+        <span class="phase-badge">{{ getPhaseName(match.phase) }}</span>
+      </div>
 
       <div class="scoreboard">
         <div class="team">
-          <img [src]="match.homeTeam?.flagUrl" [alt]="match.homeTeam?.name" width="30">
-          <span>{{ match.homeTeam?.name }}</span>
+          <img [src]="match.homeTeam.flagUrl" [alt]="match.homeTeam.name" class="flag">
+          <span class="team-name">{{ match.homeTeam.name }}</span>
         </div>
 
-        <div class="score-display">
-          <strong>{{ match.homeScore ?? 0 }}</strong>
-          <span> X </span>
-          <strong>{{ match.awayScore ?? 0 }}</strong>
+        <div class="score-container">
+          <span class="score-number">{{ match.homeScore !== null ? match.homeScore : 0 }}</span>
+          <span class="vs-divider">x</span>
+          <span class="score-number">{{ match.awayScore !== null ? match.awayScore : 0 }}</span>
         </div>
 
         <div class="team">
-          <span>{{ match.awayTeam?.name }}</span>
-          <img [src]="match.awayTeam?.flagUrl" [alt]="match.awayTeam?.name" width="30">
+          <img [src]="match.awayTeam.flagUrl" [alt]="match.awayTeam.name" class="flag">
+          <span class="team-name">{{ match.awayTeam.name }}</span>
         </div>
       </div>
 
-      <div class="details">
-        <small>
-          📍 {{ match.stadium || 'Estádio Indefinido' }} |
-          ⏰ {{ match.matchDate | date:'dd/MM HH:mm' }}
-        </small>
+      <div class="match-footer">
+        <span>📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
+        <span class="match-time">⏰ {{ match.matchDate | date:'dd/MM HH:mm' }}</span>
       </div>
     </div>
   </div>
 
   <ng-template #carregando>
-    <div class="loading-box">
-      <p>Carregando jogos ou nenhum jogo cadastrado...</p>
-      <small>Verifique se o backend na porta 8081 está ativo.</small>
+    <div class="loading-state">
+      <p>{{ loading ? 'Buscando seleções no banco de dados...' : 'Nenhum jogo cadastrado.' }}</p>
+      <small *ngIf="loading">Verifique se o backend na porta 8081 está rodando.</small>
     </div>
   </ng-template>
 </div>

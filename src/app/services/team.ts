@@ -1,18 +1,32 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+
+export interface Team {
+  id: number;
+  name: string;
+  flagUrl: string;
+  groupLetter: string;
+}
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TeamService {
-  // URL da sua API Spring Boot
   private apiUrl = 'http://localhost:8081/api/teams';
+
+  // O "canal de rádio" que avisa qual time foi clicado
+  private selectedTeamSource = new BehaviorSubject<string | null>(null);
+  selectedTeam$ = this.selectedTeamSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  // Busca a lista de seleções que vimos no navegador
-  getTeams(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getTeams(): Observable<Team[]> {
+    return this.http.get<Team[]>(this.apiUrl);
+  }
+
+  // Função para mudar o time selecionado
+  selectTeam(teamName: string | null) {
+    this.selectedTeamSource.next(teamName);
   }
 }

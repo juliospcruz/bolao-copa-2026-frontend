@@ -1,20 +1,40 @@
-<div class="container">
-  <h2>🏆 Seleções da Copa 2026</h2>
+<div class="world-cup-dashboard">
+  <div class="header-controls">
+    <h2 class="main-title">🏆 Seleções da Copa 2026</h2>
 
-  <div class="team-grid" *ngIf="teams.length > 0; else carregando">
-    <div *ngFor="let team of teams" class="team-card">
-      <img [src]="team.flagUrl" [alt]="team.name" width="50" style="border-radius: 4px; box-shadow: 1px 1px 5px rgba(0,0,0,0.2);">
-      <span>
-        <strong>{{ team.name }}</strong>
-        <small style="color: #666;">(Grupo {{ team.groupLetter }})</small>
-      </span>
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="selectedGroup = null; filtrarEAgrupar()"
+        placeholder="Pesquisar seleção (ex: Brasil)..."
+        class="search-input"
+      >
+      <button *ngIf="searchTerm || selectedGroup" (click)="limparFiltros()" class="btn-clear">
+        Ver Todos os Grupos
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading; else carregando" class="groups-layout">
+    <div *ngFor="let letter of groupLetters" class="group-card" [class.focused]="selectedGroup === letter">
+      <div class="group-header">GRUPO {{ letter }}</div>
+      <div class="teams-container">
+        <div *ngFor="let team of groupedTeams[letter]"
+             class="team-line"
+             (click)="selecionarTime(team)">
+          <img [src]="team.flagUrl" [alt]="team.name" class="flag">
+          <span class="name">{{ team.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="groupLetters.length === 0" class="no-results">
+      Nenhuma seleção encontrada para "{{ searchTerm }}"
     </div>
   </div>
 
   <ng-template #carregando>
-    <div style="padding: 20px; border: 1px dashed #ccc; margin-top: 10px;">
-      <p>Buscando seleções no banco de dados...</p>
-      <p><small>Verifique se o backend na porta 8081 está rodando e se o CORS está ativo.</small></p>
-    </div>
+    <div class="loading-box">Carregando seleções...</div>
   </ng-template>
 </div>
