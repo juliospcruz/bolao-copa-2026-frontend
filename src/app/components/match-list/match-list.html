@@ -1,42 +1,81 @@
 <div class="container">
-  <h2 class="section-title">📅 Próximos Confrontos</h2>
+  <div class="search-container">
+    <div class="search-box-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Pesquisar seleção (ex: Brasil)..."
+        (input)="onSearch($event)"
+        [value]="searchTerm">
 
-  <div *ngIf="!loading && matches.length > 0; else carregando" class="match-grid">
-    <div *ngFor="let match of matches" class="match-card">
+      <button class="btn-filter-groups" (click)="limparFiltro()">
+        Todos os Grupos
+      </button>
+    </div>
+  </div>
+
+  <div class="header-flex">
+    <h2 class="section-title">
+      {{ selectedTeamName || searchTerm ? '⚽ Resultado da Busca' : '📅 Próximos Confrontos' }}
+    </h2>
+    <button *ngIf="selectedTeamName || searchTerm" (click)="limparFiltro()" class="btn-reset">
+      Limpar Filtro
+    </button>
+  </div>
+
+  <div *ngIf="!loading && filteredMatches.length > 0; else estadoVazio" class="match-grid">
+    <div *ngFor="let match of filteredMatches; trackBy: trackByMatchId"
+         class="match-card"
+         [class.live]="isToday(match.matchDate)">
 
       <div class="match-header">
         <span class="phase-badge">{{ getPhaseName(match.phase) }}</span>
+        <span class="group-badge" *ngIf="match.homeTeam.groupLetter">
+          Grupo {{ match.homeTeam.groupLetter }}
+        </span>
       </div>
 
       <div class="scoreboard">
-        <div class="team">
+        <div class="team" [class.winner]="(match.homeScore ?? 0) > (match.awayScore ?? 0)">
           <img [src]="match.homeTeam.flagUrl" [alt]="match.homeTeam.name" class="flag">
-          <span class="team-name">{{ match.homeTeam.name }}</span>
+          <span class="team-name">{{ formatTeamName(match.homeTeam.name || '') }}</span>
         </div>
 
         <div class="score-container">
-          <span class="score-number">{{ match.homeScore !== null ? match.homeScore : 0 }}</span>
-          <span class="vs-divider">x</span>
-          <span class="score-number">{{ match.awayScore !== null ? match.awayScore : 0 }}</span>
+          <div class="score-box">
+            <span class="score-number">{{ match.homeScore !== null ? match.homeScore : '-' }}</span>
+            <span class="vs-divider">x</span>
+            <span class="score-number">{{ match.awayScore !== null ? match.awayScore : '-' }}</span>
+          </div>
         </div>
 
-        <div class="team">
+        <div class="team" [class.winner]="(match.awayScore ?? 0) > (match.homeScore ?? 0)">
           <img [src]="match.awayTeam.flagUrl" [alt]="match.awayTeam.name" class="flag">
-          <span class="team-name">{{ match.awayTeam.name }}</span>
+          <span class="team-name">{{ formatTeamName(match.awayTeam.name || '') }}</span>
         </div>
       </div>
 
       <div class="match-footer">
-        <span>📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
-        <span class="match-time">⏰ {{ match.matchDate | date:'dd/MM HH:mm' }}</span>
+        <div class="info-line">
+          <span>📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
+        </div>
+        <div class="info-line">
+          <span class="match-time">🗓️ {{ match.matchDate | date:'dd/MM' }} às {{ match.matchDate | date:'HH:mm' }}</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <ng-template #carregando>
-    <div class="loading-state">
-      <p>{{ loading ? 'Buscando seleções no banco de dados...' : 'Nenhum jogo cadastrado.' }}</p>
-      <small *ngIf="loading">Verifique se o backend na porta 8081 está rodando.</small>
+  <ng-template #estadoVazio>
+    <div class="empty-state">
+      <div *ngIf="loading" class="loader">
+        <div class="spinner"></div>
+        <p>Buscando confrontos no servidor...</p>
+      </div>
+      <div *ngIf="!loading" class="no-data">
+        <p>Nenhum jogo encontrado para "<strong>{{ searchTerm || selectedTeamName }}</strong>".</p>
+        <button (click)="limparFiltro()" class="btn-retry">Voltar para o início</button>
+      </div>
     </div>
   </ng-template>
 </div>
