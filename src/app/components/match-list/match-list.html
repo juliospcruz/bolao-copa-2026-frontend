@@ -1,81 +1,90 @@
 <div class="container">
-  <div class="search-container">
-    <div class="search-box-wrapper">
-      <span class="search-icon">🔍</span>
-      <input
-        type="text"
-        placeholder="Pesquisar seleção (ex: Brasil)..."
-        (input)="onSearch($event)"
-        [value]="searchTerm">
-
-      <button class="btn-filter-groups" (click)="limparFiltro()">
-        Todos os Grupos
-      </button>
+  <div class="dashboard-stats" *ngIf="!loading">
+    <div class="stat-card">
+      <div class="stat-info">
+        <span class="stat-label">Seu Progresso no Bolão 2026</span>
+        <div class="stat-value-group">
+          <span class="stat-value">{{ totalPalpites }} / {{ totalJogos }}</span>
+          <button *ngIf="totalPalpites > 0" class="btn-clean-all" (click)="limparTodosOsPalpites()" title="Apagar todos os palpites">
+            🗑️
+          </button>
+        </div>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" [style.width.%]="percentualProgresso"></div>
+      </div>
+      <p class="stat-subtext" *ngIf="percentualProgresso < 100">
+        Faltam {{ totalJogos - totalPalpites }} palpites para completar sua jornada!
+      </p>
+      <p class="stat-subtext success" *ngIf="percentualProgresso === 100 && totalJogos > 0">
+        ✅ Incrível! Todos os palpites foram registrados.
+      </p>
     </div>
   </div>
 
-  <div class="header-flex">
-    <h2 class="section-title">
-      {{ selectedTeamName || searchTerm ? '⚽ Resultado da Busca' : '📅 Próximos Confrontos' }}
-    </h2>
-    <button *ngIf="selectedTeamName || searchTerm" (click)="limparFiltro()" class="btn-reset">
-      Limpar Filtro
-    </button>
+  <div class="search-container">
+    <div class="search-box-wrapper">
+      <span class="search-icon">🔍</span>
+      <input #searchInput type="text" placeholder="Pesquisar seleção..." (input)="onSearch($event)" [value]="searchTerm">
+      <button class="btn-filter-groups" (click)="limparFiltro()">Todos os Grupos</button>
+    </div>
   </div>
 
   <div *ngIf="!loading && filteredMatches.length > 0; else estadoVazio" class="match-grid">
     <div *ngFor="let match of filteredMatches; trackBy: trackByMatchId"
          class="match-card"
-         [class.live]="isToday(match.matchDate)">
+         [class.live]="isToday(match.matchDate)"
+         (click)="abrirPalpite(match)">
 
       <div class="match-header">
         <span class="phase-badge">{{ getPhaseName(match.phase) }}</span>
-        <span class="group-badge" *ngIf="match.homeTeam.groupLetter">
-          Grupo {{ match.homeTeam.groupLetter }}
-        </span>
+        <span class="group-badge" *ngIf="match.homeTeam.groupLetter">Grupo {{ match.homeTeam.groupLetter }}</span>
       </div>
 
       <div class="scoreboard">
-        <div class="team" [class.winner]="(match.homeScore ?? 0) > (match.awayScore ?? 0)">
-          <img [src]="match.homeTeam.flagUrl" [alt]="match.homeTeam.name" class="flag">
-          <span class="team-name">{{ formatTeamName(match.homeTeam.name || '') }}</span>
+        <div class="team">
+          <img [src]="match.homeTeam.flagUrl" class="flag">
+          <span class="team-name">{{ formatTeamName(match.homeTeam.name) }}</span>
         </div>
 
         <div class="score-container">
           <div class="score-box">
-            <span class="score-number">{{ match.homeScore !== null ? match.homeScore : '-' }}</span>
+            <span class="score-number" [class.has-bet]="!!getBetForMatch(match.id)">
+              {{ getBetForMatch(match.id) ? getBetForMatch(match.id)?.homeScore : (match.homeScore !== null ? match.homeScore : '-') }}
+            </span>
+
             <span class="vs-divider">x</span>
-            <span class="score-number">{{ match.awayScore !== null ? match.awayScore : '-' }}</span>
+
+            <span class="score-number" [class.has-bet]="!!getBetForMatch(match.id)">
+              {{ getBetForMatch(match.id) ? getBetForMatch(match.id)?.awayScore : (match.awayScore !== null ? match.awayScore : '-') }}
+            </span>
           </div>
         </div>
 
-        <div class="team" [class.winner]="(match.awayScore ?? 0) > (match.homeScore ?? 0)">
-          <img [src]="match.awayTeam.flagUrl" [alt]="match.awayTeam.name" class="flag">
-          <span class="team-name">{{ formatTeamName(match.awayTeam.name || '') }}</span>
+        <div class="team">
+          <img [src]="match.awayTeam.flagUrl" class="flag">
+          <span class="team-name">{{ formatTeamName(match.awayTeam.name) }}</span>
         </div>
       </div>
 
       <div class="match-footer">
-        <div class="info-line">
-          <span>📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
-        </div>
-        <div class="info-line">
-          <span class="match-time">🗓️ {{ match.matchDate | date:'dd/MM' }} às {{ match.matchDate | date:'HH:mm' }}</span>
-        </div>
+        <span>📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
+        <span class="match-time">🗓️ {{ match.matchDate | date:'dd/MM' }} às {{ match.matchDate | date:'HH:mm' }}</span>
       </div>
     </div>
   </div>
 
   <ng-template #estadoVazio>
     <div class="empty-state">
-      <div *ngIf="loading" class="loader">
-        <div class="spinner"></div>
-        <p>Buscando confrontos no servidor...</p>
-      </div>
-      <div *ngIf="!loading" class="no-data">
-        <p>Nenhum jogo encontrado para "<strong>{{ searchTerm || selectedTeamName }}</strong>".</p>
-        <button (click)="limparFiltro()" class="btn-retry">Voltar para o início</button>
-      </div>
+      <div *ngIf="loading" class="spinner"></div>
+      <p *ngIf="!loading">Nenhum jogo encontrado.</p>
     </div>
   </ng-template>
+
+  <app-bet-modal
+    *ngIf="matchSelecionada"
+    [match]="matchSelecionada"
+    (close)="matchSelecionada = null"
+    (saved)="registrarPalpite($event)">
+  </app-bet-modal>
 </div>

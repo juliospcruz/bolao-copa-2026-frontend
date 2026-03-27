@@ -1,0 +1,77 @@
+$copa-blue: #0052b4;
+$copa-blue-dark: #003a84;
+$copa-gold: #ffc107;
+$white: #ffffff;
+
+.main-header {
+  background: linear-gradient(135deg, $copa-blue-dark 0%, $copa-blue 100%);
+  color: $white;
+  padding: 12px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .header-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .trophy-icon { font-size: 2rem; }
+
+    .title-group {
+      h1 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        span { color: $copa-gold; font-weight: 400; }
+      }
+      small { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; }
+    }
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+      .welcome { font-size: 0.7rem; opacity: 0.8; }
+      .name { font-size: 0.85rem; font-weight: 600; }
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      background: $copa-gold;
+      color: $copa-blue-dark;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.main-content {
+  padding-top: 20px;
+}

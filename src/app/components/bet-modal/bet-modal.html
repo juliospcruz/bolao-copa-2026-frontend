@@ -1,0 +1,62 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="header-title">
+        <span class="icon">🏆</span>
+        <h3>Registrar Seu Palpite</h3>
+      </div>
+      <button class="close-btn" (click)="close.emit()">&times;</button>
+    </div>
+
+    <div class="match-info">
+      <span class="date-info">🗓️ {{ match.matchDate | date:'dd/MM' }} às {{ match.matchDate | date:'HH:mm' }}</span>
+      <span class="divider">|</span>
+      <span class="stadium">📍 {{ match.stadium || 'Estádio Indefinido' }}</span>
+    </div>
+
+    <div class="bet-container">
+      <div class="team">
+        <img [src]="match.homeTeam.flagUrl" [alt]="match.homeTeam.name" class="flag">
+        <span class="team-name">{{ match.homeTeam.name || 'A definir' }}</span>
+      </div>
+
+      <div class="score-inputs">
+        <input
+          type="number"
+          [(ngModel)]="homeScore"
+          min="0"
+          class="score-field"
+          placeholder="0"
+          (keyup.enter)="salvar()"
+          oninput="this.value = Math.abs(this.value)">
+
+        <span class="vs-text">VS</span>
+
+        <input
+          type="number"
+          [(ngModel)]="awayScore"
+          min="0"
+          class="score-field"
+          placeholder="0"
+          (keyup.enter)="salvar()"
+          oninput="this.value = Math.abs(this.value)">
+      </div>
+
+      <div class="team">
+        <img [src]="match.awayTeam.flagUrl" [alt]="match.awayTeam.name" class="flag">
+        <span class="team-name">{{ match.awayTeam.name || 'A definir' }}</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="close.emit()">
+        <span class="icon">✕</span> Cancelar
+      </button>
+      <button class="btn-primary" (click)="salvar()" [disabled]="homeScore === null || awayScore === null">
+        <span class="icon">💾</span> Salvar Palpite
+      </button>
+    </div>
+
+  </div>
+</div>

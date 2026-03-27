@@ -7,14 +7,18 @@ import {
   ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { MatchService, Match } from '../../services/match.service';
 import { TeamService } from '../../services/team';
-import { Subscription } from 'rxjs';
+import { BetService } from '../../services/bet.service';
+import { BetModalComponent } from '../bet-modal/bet-modal';
+import { Bet } from '../../models/bet.model';
 
 @Component({
   selector: 'app-match-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BetModalComponent],
   templateUrl: './match-list.html',
   styleUrl: './match-list.scss',
 })
@@ -23,45 +27,114 @@ export class MatchListComponent implements OnInit, OnDestroy {
 
   allMatches: Match[] = [];
   filteredMatches: Match[] = [];
+  userBets: Bet[] = [];
   loading: boolean = true;
   selectedTeamName: string | null = null;
   searchTerm: string = '';
+  matchSelecionada: Match | null = null;
 
   private subscription: Subscription = new Subscription();
 
   constructor(
     private matchService: MatchService,
     private teamService: TeamService,
+    private betService: BetService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.carregarJogos();
+    this.carregarDados();
     this.ouvirFiltroDeTimes();
   }
 
-  carregarJogos(): void {
-    this.loading = true;
-    const sub = this.matchService.getMatches().subscribe({
-      next: (dados) => {
-        // Remove duplicatas e ordena por data
-        const uniqueMatches = Array.from(new Map(dados.map((m) => [m.id, m])).values());
+  get totalPalpites(): number {
+    return this.userBets ? this.userBets.length : 0;
+  }
+  get totalJogos(): number {
+    return this.allMatches.length;
+  }
+  get percentualProgresso(): number {
+    if (this.totalJogos === 0) return 0;
+    return (this.totalPalpites / this.totalJogos) * 100;
+  }
 
+  carregarDados(): void {
+    this.loading = true;
+    const sub = forkJoin({
+      matches: this.matchService.getMatches().pipe(catchError(() => of([]))),
+      bets: this.betService.getBets().pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: (res) => {
+        const uniqueMatches = Array.from(new Map(res.matches.map((m) => [m.id, m])).values());
         this.allMatches = uniqueMatches.sort(
           (a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime(),
         );
-
+        this.userBets = res.bets || [];
         this.aplicarFiltro();
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Erro ao carregar partidas:', err);
+      error: () => {
         this.loading = false;
         this.cdr.detectChanges();
       },
     });
     this.subscription.add(sub);
+  }
+
+  limparTodosOsPalpites(): void {
+    if (this.userBets.length === 0) return;
+    if (confirm('Deseja apagar TODOS os seus palpites?')) {
+      this.loading = true;
+      const deletes = this.userBets.map((bet) => this.betService.deleteBet(bet.id!));
+      forkJoin(deletes).subscribe({
+        next: () => this.carregarDados(),
+        error: () => this.carregarDados(),
+      });
+    }
+  }
+
+  getBetForMatch(matchId: number): Bet | undefined {
+    if (!this.userBets) return undefined;
+    return this.userBets.find((b) => b.matchId === matchId);
+  }
+
+  abrirPalpite(match: Match) {
+    this.matchSelecionada = match;
+  }
+
+  registrarPalpite(palpite: Bet) {
+    this.betService.salvarPalpite(palpite).subscribe({
+      next: () => {
+        this.matchSelecionada = null;
+        this.carregarDados();
+      },
+      error: (err) => console.error('Erro ao salvar palpite:', err),
+    });
+  }
+
+  private aplicarFiltro(): void {
+    let result = [...this.allMatches];
+    if (this.selectedTeamName) {
+      const teamInGroup = this.allMatches.find(
+        (m) =>
+          m.homeTeam.name === this.selectedTeamName || m.awayTeam.name === this.selectedTeamName,
+      );
+      const groupLetter = teamInGroup?.homeTeam.groupLetter || teamInGroup?.awayTeam.groupLetter;
+      if (groupLetter) {
+        result = result.filter(
+          (m) => m.homeTeam.groupLetter === groupLetter || m.awayTeam.groupLetter === groupLetter,
+        );
+      }
+    }
+    if (this.searchTerm) {
+      result = result.filter(
+        (m) =>
+          m.homeTeam.name.toLowerCase().includes(this.searchTerm) ||
+          m.awayTeam.name.toLowerCase().includes(this.searchTerm),
+      );
+    }
+    this.filteredMatches = result;
   }
 
   private ouvirFiltroDeTimes(): void {
@@ -79,84 +152,30 @@ export class MatchListComponent implements OnInit, OnDestroy {
     this.aplicarFiltro();
   }
 
-  /**
-   * NOVA LÓGICA: Se um time for selecionado, mostramos todos os jogos do GRUPO dele.
-   * Se for busca por texto, filtramos pelo nome do time.
-   */
-  private aplicarFiltro(): void {
-    let result = [...this.allMatches];
-
-    // 1. Prioridade: Se clicou em uma seleção (ex: México no Grupo A)
-    if (this.selectedTeamName) {
-      // Primeiro, achamos a letra do grupo dessa seleção
-      const teamInGroup = this.allMatches.find(
-        (m) =>
-          m.homeTeam.name === this.selectedTeamName || m.awayTeam.name === this.selectedTeamName,
-      );
-
-      const groupLetter = teamInGroup?.homeTeam.groupLetter || teamInGroup?.awayTeam.groupLetter;
-
-      if (groupLetter) {
-        // Filtramos todos os jogos que pertencem a esse grupo
-        result = result.filter(
-          (m) => m.homeTeam.groupLetter === groupLetter || m.awayTeam.groupLetter === groupLetter,
-        );
-      } else {
-        // Fallback: se não achar o grupo, filtra só pelo time
-        result = result.filter(
-          (m) =>
-            m.homeTeam.name === this.selectedTeamName || m.awayTeam.name === this.selectedTeamName,
-        );
-      }
-    }
-
-    // 2. Filtro adicional: Busca por texto (se houver)
-    if (this.searchTerm) {
-      result = result.filter(
-        (m) =>
-          m.homeTeam.name.toLowerCase().includes(this.searchTerm) ||
-          m.awayTeam.name.toLowerCase().includes(this.searchTerm),
-      );
-    }
-
-    this.filteredMatches = result;
+  limparFiltro(): void {
+    this.searchTerm = '';
+    this.selectedTeamName = null;
+    this.teamService.selectTeam(null);
+    if (this.searchInput) this.searchInput.nativeElement.value = '';
+    this.aplicarFiltro();
   }
 
   trackByMatchId(index: number, match: Match): number {
     return match.id;
   }
-
-  limparFiltro(): void {
-    this.searchTerm = '';
-    this.selectedTeamName = null;
-    this.teamService.selectTeam(null);
-
-    // Limpa o campo de input visualmente usando o ViewChild
-    if (this.searchInput) {
-      this.searchInput.nativeElement.value = '';
-    }
-
-    this.aplicarFiltro();
-  }
-
   formatTeamName(name: string): string {
     return name && name.trim() !== '' ? name : 'A definir';
   }
-
   isToday(dateString: string): boolean {
-    const matchDate = new Date(dateString).toLocaleDateString();
-    const today = new Date().toLocaleDateString();
-    return matchDate === today;
+    return new Date(dateString).toLocaleDateString() === new Date().toLocaleDateString();
   }
 
   getPhaseName(phase: string): string {
-    const phases: { [key: string]: string } = {
+    const phases: any = {
       GROUP_STAGE: 'Fase de Grupos',
-      ROUND_OF_32: 'Dezesseis-avos',
-      ROUND_OF_16: 'Oitavas de Final',
-      QUARTER_FINALS: 'Quartas de Final',
-      SEMI_FINALS: 'Semifinal',
-      FINAL: 'Grande Final',
+      ROUND_OF_16: 'Oitavas',
+      QUARTER_FINALS: 'Quartas',
+      FINAL: 'Final',
     };
     return phases[phase] || phase;
   }

@@ -1,7 +1,14 @@
+@use "sass:color";
+
+// VARIÁVEIS (Mantendo seu padrão de cores da Copa)
 $copa-blue: #0052b4;
+$copa-blue-dark: #003a84;
+$copa-gold: #ffc107;
 $copa-red: #d32f2f;
 $bg-light: #f8f9fa;
 $text-dark: #1a1a1a;
+$white: #ffffff;
+$border-color: #eeeeee;
 
 .container {
   padding: 20px;
@@ -9,172 +16,268 @@ $text-dark: #1a1a1a;
   margin: 0 auto;
 }
 
-// Estilo unificado para busca e botão (Evita sobreposição)
-.search-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 40px;
-  width: 100%;
+// DASHBOARD
+.dashboard-stats {
+  margin-bottom: 35px;
+
+  .stat-card {
+    background: linear-gradient(135deg, $copa-blue, $copa-blue-dark);
+    color: $white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 82, 180, 0.2);
+  }
+
+  .stat-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; // Alinhado ao centro para melhor respiro
+    margin-bottom: 12px;
+
+    .stat-label { font-size: 0.95rem; opacity: 0.9; font-weight: 500; }
+  }
+
+  .stat-value-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .stat-value { font-size: 1.8rem; font-weight: 900; }
+
+    .btn-clean-all {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+
+      &:hover {
+        background: $copa-red;
+        border-color: $copa-red;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .progress-bar-container {
+    background: rgba(255, 255, 255, 0.2);
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .progress-bar-fill {
+    background: $copa-gold;
+    height: 100%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px rgba($copa-gold, 0.5);
+  }
+
+  .stat-subtext {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    &.success { color: #81c784; font-weight: 600; }
+  }
 }
 
-.search-box-wrapper {
+// BUSCA
+.search-container {
   display: flex;
-  align-items: center;
-  background: #ffffff;
-  border: 2px solid $copa-blue;
-  border-radius: 30px;
-  padding: 4px 6px 4px 18px;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: 0 4px 12px rgba(0, 82, 180, 0.1);
+  margin-bottom: 30px;
 
-  .search-icon {
-    color: #888;
-    margin-right: 10px;
-  }
+  .search-box-wrapper {
+    display: flex;
+    align-items: center;
+    background: $white;
+    border: 2px solid rgba($copa-blue, 0.3);
+    border-radius: 30px;
+    padding: 2px 20px;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    transition: border-color 0.3s;
 
-  input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 10px 0;
-    font-size: 1rem;
-    background: transparent;
-  }
+    &:focus-within { border-color: $copa-blue; }
 
-  .btn-filter-groups {
-    background: transparent;
-    color: $copa-blue;
-    border: none;
-    border-left: 1px solid #ddd;
-    padding: 8px 20px;
-    margin-left: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
+    .search-icon { margin-right: 10px; opacity: 0.5; }
 
-    &:hover {
-      color: darken($copa-blue, 15%);
-      text-decoration: underline;
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 12px 0;
+      font-size: 1rem;
+    }
+
+    .btn-filter-groups {
+      background: transparent;
+      color: $copa-blue;
+      border: none;
+      border-left: 1px solid #ddd;
+      padding-left: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover { color: $copa-blue-dark; }
     }
   }
 }
 
-.header-flex {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  border-left: 5px solid $copa-blue;
-  padding-left: 15px;
-
-  .section-title {
-    font-size: 1.4rem;
-    color: $text-dark;
-  }
-
-  .btn-reset {
-    background: transparent;
-    color: $copa-red;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-}
-
+// CARDS E GRID
 .match-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  gap: 24px;
 }
 
 .match-card {
-  background: #ffffff;
-  border-radius: 12px;
+  background: $white;
+  border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
-  transition: transform 0.2s ease;
+  border: 1px solid $border-color;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
   }
 
   &.live {
     border-top: 4px solid $copa-red;
+    background: linear-gradient(to bottom, rgba($copa-red, 0.02), $white);
+  }
+
+  .match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .phase-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: $copa-blue;
+      background: rgba($copa-blue, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .group-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #777;
+    }
   }
 }
 
+// PLACAR (CORREÇÃO DO BUG VISUAL)
 .scoreboard {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin: 15px 0;
+  align-items: center;
+  margin: 20px 0;
 
   .team {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 38%;
+    width: 35%;
 
     .flag {
-      width: 50px;
-      height: 33px;
+      width: 55px;
+      height: 36px;
       object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .team-name {
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.95rem;
+      font-weight: 700;
       text-align: center;
+      color: $text-dark;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+  }
+
+  .score-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    .score-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
 
   .score-number {
     font-size: 1.6rem;
-    font-weight: 800;
+    font-weight: 900;
     background: $bg-light;
-    padding: 5px 12px;
-    border-radius: 6px;
+    padding: 6px 0; // Padding lateral removido para usar min-width
+    border-radius: 8px;
+    min-width: 45px; // LARGURA FIXA PARA EVITAR O BUG
+    text-align: center;
+    display: inline-block;
+    color: $text-dark;
+    transition: all 0.3s ease;
+
+    &.has-bet {
+      background: color.adjust($copa-gold, $lightness: 40%) !important;
+      color: color.adjust($copa-gold, $lightness: -40%) !important;
+      border: 2px solid $copa-gold;
+      box-shadow: 0 4px 12px rgba($copa-gold, 0.3);
+    }
+  }
+
+  .vs-divider {
+    font-weight: 900;
+    color: #ccc;
+    font-size: 0.9rem;
   }
 }
 
 .match-footer {
   font-size: 0.8rem;
-  color: #666;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 12px;
+  color: #888;
+  border-top: 1px solid #f5f5f5;
+  padding-top: 15px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 
-  .match-time {
-    color: $copa-red;
-    font-weight: 600;
-  }
+  span { display: flex; align-items: center; gap: 6px; }
 }
 
+// SPINNER
 .empty-state {
   text-align: center;
-  padding: 50px;
+  padding: 80px 20px;
 
   .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
+    width: 45px;
+    height: 45px;
+    border: 4px solid rgba($copa-blue, 0.1);
     border-top: 4px solid $copa-blue;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 0 auto 15px;
+    margin: 0 auto 20px;
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+@keyframes spin { 100% { transform: rotate(360deg); } }
