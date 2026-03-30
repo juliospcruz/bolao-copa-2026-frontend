@@ -1,283 +1,85 @@
 @use "sass:color";
 
-// VARIÁVEIS (Mantendo seu padrão de cores da Copa)
 $copa-blue: #0052b4;
 $copa-blue-dark: #003a84;
 $copa-gold: #ffc107;
-$copa-red: #d32f2f;
-$bg-light: #f8f9fa;
-$text-dark: #1a1a1a;
 $white: #ffffff;
-$border-color: #eeeeee;
 
-.container {
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
+.container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
-// DASHBOARD
 .dashboard-stats {
-  margin-bottom: 35px;
-
-  .stat-card {
-    background: linear-gradient(135deg, $copa-blue, $copa-blue-dark);
-    color: $white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 82, 180, 0.2);
-  }
-
-  .stat-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; // Alinhado ao centro para melhor respiro
-    margin-bottom: 12px;
-
-    .stat-label { font-size: 0.95rem; opacity: 0.9; font-weight: 500; }
-  }
-
-  .stat-value-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .stat-value { font-size: 1.8rem; font-weight: 900; }
-
-    .btn-clean-all {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 6px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1.1rem;
-
-      &:hover {
-        background: $copa-red;
-        border-color: $copa-red;
-        transform: scale(1.1);
-      }
-    }
-  }
-
-  .progress-bar-container {
-    background: rgba(255, 255, 255, 0.2);
-    height: 12px;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-
-  .progress-bar-fill {
-    background: $copa-gold;
-    height: 100%;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 15px rgba($copa-gold, 0.5);
-  }
-
-  .stat-subtext {
-    font-size: 0.85rem;
-    margin-top: 8px;
-    &.success { color: #81c784; font-weight: 600; }
-  }
-}
-
-// BUSCA
-.search-container {
-  display: flex;
   margin-bottom: 30px;
+  .stat-card {
+    background: linear-gradient(135deg, $copa-blue-dark, $copa-blue);
+    color: $white; padding: 25px; border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  .stat-label { font-size: 0.95rem; opacity: 0.9; }
+  .stat-value { font-size: 1.8rem; font-weight: 800; display: block; margin-top: 5px; }
+  .progress-bar-container { background: rgba(255, 255, 255, 0.2); height: 10px; border-radius: 5px; margin-top: 15px; overflow: hidden; }
+  .progress-bar-fill { background: $copa-gold; height: 100%; transition: width 0.6s ease-in-out; }
+}
 
+.search-container {
+  display: flex; justify-content: flex-end; margin-bottom: 25px;
   .search-box-wrapper {
-    display: flex;
-    align-items: center;
-    background: $white;
-    border: 2px solid rgba($copa-blue, 0.3);
-    border-radius: 30px;
-    padding: 2px 20px;
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-    transition: border-color 0.3s;
-
-    &:focus-within { border-color: $copa-blue; }
-
-    .search-icon { margin-right: 10px; opacity: 0.5; }
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 12px 0;
-      font-size: 1rem;
-    }
-
-    .btn-filter-groups {
-      background: transparent;
-      color: $copa-blue;
-      border: none;
-      border-left: 1px solid #ddd;
-      padding-left: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-
-      &:hover { color: $copa-blue-dark; }
-    }
+    display: flex; align-items: center; background: white; border: 2px solid #eee;
+    border-radius: 50px; padding: 6px 18px; width: 100%; max-width: 380px;
+    transition: all 0.3s;
+    &:focus-within { border-color: $copa-blue; box-shadow: 0 4px 12px rgba(0, 82, 180, 0.1); }
+    .search-icon { color: #999; margin-right: 10px; }
+    input { border: none; outline: none; flex: 1; padding: 8px 0; font-size: 0.95rem; }
+    .btn-clear { background: #f0f0f0; border: none; padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: 0.2s; &:hover { background: #e0e0e0; } }
   }
 }
 
-// CARDS E GRID
-.match-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+.filter-chips {
+  display: flex; justify-content: center; gap: 12px; margin-bottom: 35px;
+  button {
+    background: white; border: 1px solid #ddd; padding: 8px 22px; border-radius: 25px;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+    &.active { background: $copa-blue; color: white; border-color: $copa-blue; transform: scale(1.05); }
+  }
 }
+
+.match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
 
 .match-card {
-  background: $white;
-  border-radius: 14px;
-  padding: 20px;
-  border: 1px solid $border-color;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-  display: flex;
-  flex-direction: column;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-  }
-
-  &.live {
-    border-top: 4px solid $copa-red;
-    background: linear-gradient(to bottom, rgba($copa-red, 0.02), $white);
-  }
-
+  background: white; border-radius: 16px; padding: 20px; border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; transition: 0.2s;
+  &:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
   .match-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-
-    .phase-badge {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: $copa-blue;
-      background: rgba($copa-blue, 0.1);
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
+    display: flex; justify-content: space-between; margin-bottom: 15px;
+    .phase-badge { font-size: 0.75rem; font-weight: 700; color: #999; text-transform: uppercase; }
+    .group-badge { background: #eef4ff; color: $copa-blue; padding: 2px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+  }
+  .scoreboard {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+    .team {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      .flag { width: 48px; height: 32px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+      .team-name { font-size: 0.95rem; font-weight: 800; margin-top: 8px; }
     }
-
-    .group-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #777;
+    .score-container {
+      .score-wrapper { display: flex; align-items: center; gap: 8px; }
+      .score-box {
+        width: 42px; height: 52px; background: #fffdf0; border: 2px solid $copa-gold;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900;
+        border-radius: 10px; &.has-bet { background: #e8f5e9; border-color: #4caf50; }
+      }
+      .vs-divider { font-weight: bold; color: #ccc; }
     }
+  }
+  .match-footer {
+    border-top: 1px solid #f8f8f8; padding-top: 15px; font-size: 0.8rem; color: #777;
+    display: flex; flex-direction: column; gap: 4px;
   }
 }
 
-// PLACAR (CORREÇÃO DO BUG VISUAL)
-.scoreboard {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-
-  .team {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 35%;
-
-    .flag {
-      width: 55px;
-      height: 36px;
-      object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .team-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-align: center;
-      color: $text-dark;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      width: 100%;
-    }
-  }
-
-  .score-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-
-    .score-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-  }
-
-  .score-number {
-    font-size: 1.6rem;
-    font-weight: 900;
-    background: $bg-light;
-    padding: 6px 0; // Padding lateral removido para usar min-width
-    border-radius: 8px;
-    min-width: 45px; // LARGURA FIXA PARA EVITAR O BUG
-    text-align: center;
-    display: inline-block;
-    color: $text-dark;
-    transition: all 0.3s ease;
-
-    &.has-bet {
-      background: color.adjust($copa-gold, $lightness: 40%) !important;
-      color: color.adjust($copa-gold, $lightness: -40%) !important;
-      border: 2px solid $copa-gold;
-      box-shadow: 0 4px 12px rgba($copa-gold, 0.3);
-    }
-  }
-
-  .vs-divider {
-    font-weight: 900;
-    color: #ccc;
-    font-size: 0.9rem;
-  }
+.toast-success {
+  position: fixed; bottom: 30px; right: 30px; background: #1b5e20; color: white;
+  padding: 15px 30px; border-radius: 50px; transform: translateY(150px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  &.show { transform: translateY(0); }
 }
 
-.match-footer {
-  font-size: 0.8rem;
-  color: #888;
-  border-top: 1px solid #f5f5f5;
-  padding-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  span { display: flex; align-items: center; gap: 6px; }
-}
-
-// SPINNER
-.empty-state {
-  text-align: center;
-  padding: 80px 20px;
-
-  .spinner {
-    width: 45px;
-    height: 45px;
-    border: 4px solid rgba($copa-blue, 0.1);
-    border-top: 4px solid $copa-blue;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
-}
-
-@keyframes spin { 100% { transform: rotate(360deg); } }
+.empty-state { text-align: center; padding: 60px; color: #bbb; }
