@@ -1,77 +1,295 @@
 <div class="container">
+
+  <!-- ========================= -->
+  <!-- ESTATÍSTICAS -->
+  <!-- ========================= -->
+
   <div class="dashboard-stats" *ngIf="!loading">
+
     <div class="stat-card">
+
       <div class="stat-info">
-        <span class="stat-label">Seu Progresso no Bolão 2026</span>
+
+        <span class="stat-label">
+          Seu Progresso no Bolão 2026
+        </span>
+
         <div class="stat-value-group">
-          <span class="stat-value">{{ totalPalpites }} / {{ totalJogos }}</span>
+          <span class="stat-value">
+            {{ totalPalpites }} / {{ totalJogos }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="progress-bar-container">
+        <div
+          class="progress-bar-fill"
+          [style.width.%]="percentualProgresso">
         </div>
       </div>
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" [style.width.%]="percentualProgresso"></div>
-      </div>
+
     </div>
+
   </div>
+
+  <!-- ========================= -->
+  <!-- BUSCA -->
+  <!-- ========================= -->
 
   <div class="search-container">
+
     <div class="search-box-wrapper">
+
       <span class="search-icon">🔍</span>
-      <input #searchInput type="text" placeholder="Filtrar por seleção ou estádio..." (input)="onSearch($event)">
-      <button class="btn-clear" (click)="limparFiltro()">Limpar</button>
+
+      <input
+        #searchInput
+        type="text"
+        placeholder="Filtrar por seleção, estádio ou cidade..."
+        (input)="onSearch($event)"
+      >
+
+      <button
+        class="btn-clear"
+        (click)="limparFiltro()">
+
+        Limpar
+
+      </button>
+
     </div>
+
   </div>
+
+  <!-- ========================= -->
+  <!-- FILTROS -->
+  <!-- ========================= -->
 
   <div class="filter-chips">
-    <button [class.active]="filterStatus === 'all'" (click)="setFilterStatus('all')">Todos</button>
-    <button [class.active]="filterStatus === 'pending'" (click)="setFilterStatus('pending')">Pendentes 📝</button>
-    <button [class.active]="filterStatus === 'completed'" (click)="setFilterStatus('completed')">Palpitados ✅</button>
+
+    <button
+      [class.active]="filterStatus === 'all'"
+      (click)="setFilterStatus('all')">
+
+      Todos
+
+    </button>
+
+    <button
+      [class.active]="filterStatus === 'pending'"
+      (click)="setFilterStatus('pending')">
+
+      Pendentes 📝
+
+    </button>
+
+    <button
+      [class.active]="filterStatus === 'completed'"
+      (click)="setFilterStatus('completed')">
+
+      Palpitados ✅
+
+    </button>
+
   </div>
 
-  <div *ngIf="!loading && filteredMatches.length > 0; else estadoVazio" class="match-grid">
-    <div *ngFor="let match of filteredMatches; trackBy: trackByMatchId" class="match-card" (click)="abrirPalpite(match)">
+  <!-- ========================= -->
+  <!-- LISTA DE JOGOS -->
+  <!-- ========================= -->
+
+  <div
+    *ngIf="!loading && filteredMatches.length > 0; else estadoVazio"
+    class="match-grid">
+
+    <div
+      *ngFor="let match of filteredMatches; trackBy: trackByMatchId"
+      class="match-card">
+
+      <!-- HEADER -->
 
       <div class="match-header">
-        <span class="phase-badge">{{ getPhaseName(match.phase) }}</span>
-        <span class="group-badge">Grupo {{ getGroupValue(match.homeTeam) }}</span>
+
+        <span class="phase-badge">
+          {{ getPhaseName(match.phase) }}
+        </span>
+
+        <span class="group-badge">
+          Grupo {{ getGroupValue(match.homeTeam) }}
+        </span>
+
       </div>
+
+      <!-- DATA -->
+
+      <div class="match-date">
+
+        🗓️
+        {{ match.matchDate | date:'dd/MM/yyyy' }}
+        às
+        {{ match.matchDate | date:'HH:mm' }}
+
+      </div>
+
+      <!-- PLACAR -->
 
       <div class="scoreboard">
+
+        <!-- CASA -->
+
         <div class="team">
-          <img [src]="match.homeTeam.flagUrl" class="flag" [alt]="match.homeTeam.name">
-          <span class="team-name">{{ formatTeamName(match.homeTeam.name) }}</span>
+
+          <img
+            [src]="match.homeTeam.flagUrl"
+            class="flag"
+            [alt]="match.homeTeam.name">
+
+          <span class="team-name">
+            {{ formatTeamName(match.homeTeam.name) }}
+          </span>
+
         </div>
+
+        <!-- SCORE -->
 
         <div class="score-container">
+
           <div class="score-wrapper">
-            <div class="score-box" [class.has-bet]="!!getBetForMatch(match.id)">
-              {{ getBetForMatch(match.id) ? getBetForMatch(match.id)?.homeScore : (match.homeScore !== null ? match.homeScore : '-') }}
+
+            <div
+              class="score-box"
+              [class.has-bet]="!!getBetForMatch(match.id)">
+
+              {{
+                getBetForMatch(match.id)
+                  ? getBetForMatch(match.id)?.homeScore
+                  : (match.homeScore !== null ? match.homeScore : '-')
+              }}
+
             </div>
+
             <span class="vs-divider">x</span>
-            <div class="score-box" [class.has-bet]="!!getBetForMatch(match.id)">
-              {{ getBetForMatch(match.id) ? getBetForMatch(match.id)?.awayScore : (match.awayScore !== null ? match.awayScore : '-') }}
+
+            <div
+              class="score-box"
+              [class.has-bet]="!!getBetForMatch(match.id)">
+
+              {{
+                getBetForMatch(match.id)
+                  ? getBetForMatch(match.id)?.awayScore
+                  : (match.awayScore !== null ? match.awayScore : '-')
+              }}
+
             </div>
+
           </div>
+
         </div>
+
+        <!-- VISITANTE -->
 
         <div class="team">
-          <img [src]="match.awayTeam.flagUrl" class="flag" [alt]="match.awayTeam.name">
-          <span class="team-name">{{ formatTeamName(match.awayTeam.name) }}</span>
+
+          <img
+            [src]="match.awayTeam.flagUrl"
+            class="flag"
+            [alt]="match.awayTeam.name">
+
+          <span class="team-name">
+            {{ formatTeamName(match.awayTeam.name) }}
+          </span>
+
         </div>
+
       </div>
+
+      <!-- INFORMAÇÕES -->
 
       <div class="match-footer">
-        <div class="footer-item">📍 {{ match.stadium }}</div>
-        <div class="footer-item">🗓️ {{ match.matchDate | date:'dd/MM' }} às {{ match.matchDate | date:'HH:mm' }}</div>
+
+        <div class="footer-item">
+          🏟️ {{ match.stadium }}
+        </div>
+
+        <div class="footer-item">
+          📍 {{ match.city }}
+        </div>
+
       </div>
+
+      <!-- STATUS -->
+
+      <div class="bet-status">
+
+        <span *ngIf="getBetForMatch(match.id)">
+          ✅ Você já palpitou
+        </span>
+
+        <span *ngIf="!getBetForMatch(match.id)">
+          ⏳ Aguardando palpite
+        </span>
+
+      </div>
+
+      <!-- BOTÃO -->
+
+      <div class="action-area">
+
+        <button
+          class="btn-bet"
+          (click)="abrirPalpite(match)">
+
+          {{
+            getBetForMatch(match.id)
+              ? 'Editar Palpite'
+              : 'Palpitar Jogo'
+          }}
+
+        </button>
+
+      </div>
+
     </div>
+
   </div>
 
+  <!-- ========================= -->
+  <!-- ESTADO VAZIO -->
+  <!-- ========================= -->
+
   <ng-template #estadoVazio>
+
     <div class="empty-state">
-      <p>Nenhuma partida encontrada.</p>
+
+      <p>
+        Nenhuma partida encontrada.
+      </p>
+
     </div>
+
   </ng-template>
 
-  <app-bet-modal *ngIf="matchSelecionada" [match]="matchSelecionada" (close)="matchSelecionada = null" (saved)="registrarPalpite($event)"></app-bet-modal>
-  <div class="toast-success" [class.show]="showToast">⚽ Palpite registrado com sucesso!</div>
+  <!-- ========================= -->
+  <!-- MODAL -->
+  <!-- ========================= -->
+
+  <app-bet-modal
+    *ngIf="matchSelecionada"
+    [match]="matchSelecionada"
+    (close)="matchSelecionada = null"
+    (saved)="registrarPalpite($event)">
+  </app-bet-modal>
+
+  <!-- ========================= -->
+  <!-- TOAST -->
+  <!-- ========================= -->
+
+  <div
+    class="toast-success"
+    [class.show]="showToast">
+
+    ⚽ Palpite registrado com sucesso!
+
+  </div>
+
 </div>

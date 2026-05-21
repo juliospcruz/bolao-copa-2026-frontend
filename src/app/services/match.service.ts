@@ -13,13 +13,33 @@ export interface MatchTeam {
 
 // Interface Principal da Partida
 export interface Match {
+
   id: number;
-  homeTeam: MatchTeam;
-  awayTeam: MatchTeam;
+
+  homeTeam: {
+    id: number;
+    name: string;
+    flagUrl: string;
+    groupLetter: string;
+  };
+
+  awayTeam: {
+    id: number;
+    name: string;
+    flagUrl: string;
+    groupLetter: string;
+  };
+
   homeScore: number | null;
+
   awayScore: number | null;
-  matchDate: string; // ISO String vinda do Java
+
+  matchDate: string;
+
   stadium: string;
+
+  city: string;
+
   phase: string;
 }
 
